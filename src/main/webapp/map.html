@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+
+<script type="text/javascript">
+	//密钥
+	window._AMapSecurityConfig = {
+		securityJsCode : '9be0d23cef93d90d8e3217f49715cd84',
+	}
+</script>
+<script type="text/javascript"
+	src="https://webapi.amap.com/maps?v=1.4.15&key=06c9674ca7423e2f981ecedec8312da2">
+	
+</script>
+<link href="css/map1.css" rel="stylesheet" type="text/css" />
+
+<title>地图</title>
+</head>
+<body>
+	<div id="container"></div>
+	<div id="load" class="info-load">地图正在加载</div>
+	<div class="info-top" id="top">
+		<h4>获取地图级别与中心点坐标</h4>
+		<p>
+			当前级别：<span id="map-zoom">11</span>
+		</p>
+		<p>
+			当前中心点：<span id="map-center">121.498586,31.239637</span>
+		</p>
+	</div>
+	
+	<div class="info-addresss">
+        <input id='address' type="text" disabled>
+    </div>
+	
+
+	<script>
+		var map = new AMap.Map('container', {
+			resizeEnable : true, //是否监控地图容器尺寸变化
+			
+
+		});
+
+		//显示地图层级与中心点信息
+		function logMapinfo() {
+			var zoom = map.getZoom(); //获取当前地图级别
+			var center = map.getCenter(); //获取当前地图中心位置
+
+			document.querySelector("#map-zoom").innerText = zoom;
+			document.querySelector("#map-center").innerText = center.toString();
+		};
+
+		//绑定地图移动与缩放事件
+		map.on('moveend', logMapinfo);
+		map.on('zoomend', logMapinfo);
+
+		var marker = new AMap.Marker({
+			position : [ 116.397428, 39.90923 ],
+			image : 'img\\marker.png',
+			iconSize : new AMap.Size(25, 34)
+		});
+		
+		
+		marker.on("dblclick", function() {
+			window.location.href = 'subway.html';
+		});
+		marker.setMap(map);
+
+		var marker2 = new AMap.Marker({
+			position : [ 114.53952, 38.03647 ],
+			image : 'img\\marker.png',
+			iconSize : new AMap.Size(25, 34)
+		});
+		marker2.on("dblclick", function() {
+			window.location.href = 'subway2.html';
+		});
+		
+		marker2.setMap(map);
+		
+		var geocoder = new AMap.Geocoder({
+	        // city: "010", //城市设为北京，默认：“全国”
+	        // radius: 1000 //范围，默认：500
+	    });
+
+		map.on('click', function(e) {
+		
+			  var lnglat  = e.lnglat.getLng() + ',' + e.lnglat.getLat();
+		        map.add(marker);
+		        marker.setPosition(lnglat);
+		        
+		        geocoder.getAddress(lnglat, function(status, result) {
+		            if (status === 'complete'&&result.regeocode) {
+		                var address = result.regeocode.formattedAddress;
+		                document.getElementById('address').value = address;
+		            }else{
+		                log.error('根据经纬度查询地址失败')
+		            }
+		        });
+
+	       
+			
+		});
+		
+		
+		
+
+		map.on('complete', function() {
+			document.getElementById('load').innerHTML = "地图加载完毕！";
+		});
+		
+		
+		
+	    
+
+
+		
+		
+		
+	</script>
+</body>
+</html>
